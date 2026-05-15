@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - FoodBridge</title>
+    <style>
+        /* Centering the registration card */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .signup-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 350px;
+        }
+
+        .signup-card h2 {
+            color: #2ecc71;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .signup-card p.subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 25px;
+        }
+
+        /* Input styling - Crucial for the ValueError fix */
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box; /* Ensures padding doesn't break layout */
+            font-size: 1em;
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background 0.3s;
+        }
+
+        .btn-signup:hover {
+            background-color: #27ae60;
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .footer-text a {
+            color: #2ecc71;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Error Message Styling */
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 15px;
+            color: #e74c3c;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signup-card">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join the FoodBridge community</p>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <input type="text" name="username" placeholder="Choose Username" required>
+            <input type="password" name="password" placeholder="Create Password" required>
+            
+            <button type="submit" class="btn-signup">Register</button>
+        </form>
+
+        <div class="footer-text">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </div>
+    </div>
+
+</body>
+</html>

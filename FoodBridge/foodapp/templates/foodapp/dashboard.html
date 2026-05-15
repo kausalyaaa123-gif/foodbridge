@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - FoodBridge</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .welcome-msg { margin-bottom: 30px; text-align: center; }
+        .container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .btn-card { background: white; width: 250px; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); text-align: center; cursor: pointer; transition: transform 0.3s; text-decoration: none; }
+        .btn-card:hover { transform: translateY(-10px); }
+        .donate { border-top: 8px solid #2ecc71; }
+        .claim { border-top: 8px solid #3498db; }
+        h2 { margin: 0; color: #333; }
+        p { color: #666; margin-top: 10px; }
+        .icon { font-size: 50px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="welcome-msg">
+        <h1>Welcome to FoodBridge, {{ user.username }}!</h1>
+        <p>What would you like to do today?</p>
+    </div>
+
+    <div class="container">
+        <a href="{% url 'donate' %}" class="btn-card donate">
+            <div class="icon">🥗</div>
+            <h2>DONATE</h2>
+            <p>Share your surplus food with the community.</p>
+        </a>
+
+        <a href="{% url 'claim' %}" class="btn-card claim">
+            <div class="icon">😋</div>
+            <h2>CLAIM</h2>
+            <p>Find available food donations near you.</p>
+        </a>
+    </div>
+    
+    <br>
+
+    <a href="{% url 'logout' %}" style="color: red;">Logout</a>
+</body>
+</html>

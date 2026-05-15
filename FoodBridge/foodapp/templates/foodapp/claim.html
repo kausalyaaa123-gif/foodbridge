@@ -1,0 +1,107 @@
+{% load food_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Available Food - FoodBridge</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        h1 { color: #2c3e50; text-align: center; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 30px; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 300px; overflow: hidden; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-content { padding: 15px; }
+        .distance-tag { color: #27ae60; font-weight: bold; font-size: 0.9em; }
+        .btn-claim { background-color: #3498db; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-map { background-color: #e67e22; text-decoration: none; color: white; display: block; text-align: center; padding: 10px; border-radius: 6px; margin-top: 5px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <h1>Nearby Food Donations</h1>
+    
+    {% if messages %}
+    {% for message in messages %}
+        <div style="padding: 15px; background-color: #d4edda; color: #155724; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+            {{ message }}
+        </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="container">
+        {% for item in donations %}
+        <div class="card">
+            {% if item.food_image %}
+                <img src="{{ item.food_image.url }}" alt="{{ item.food_name }}">
+            {% endif %}
+            
+            <div class="card-content">
+                <h3>{{ item.food_name }}</h3>
+                <p>Quantity: <strong>{{ item.quantity }} kg</strong></p>
+                
+                <p style="color: #e74c3c; font-weight: bold; font-size: 0.9em; margin-bottom: 10px;">
+                    ⚠️ Expires in: <strong>{{ item.created_at|expiry_time|timeuntil }}</strong>
+                </p>
+                
+                <p class="distance-tag">📍 {{ item.distance }} km away</p>
+                
+                <a href="https://www.google.com/maps/search/?api=1&query={{ item.latitude }},{{ item.longitude }}" target="_blank" class="btn-map">Open in Google Maps</a>
+                
+                <form action="{% url 'process_claim' item.id %}" method="POST" style="margin-top: 10px;">
+    {% csrf_token %}
+    <label style="font-size: 0.8em; color: #7f8c8d;">How much do you need (kg)?</label>
+    <input type="number" name="claimed_quantity" 
+           step="0.1" min="0.1" max="{{ item.quantity }}" 
+           value="1.0" 
+           style="width: 100%; padding: 8px; margin-bottom: 5px; border: 1px solid #ddd; border-radius: 4px;">
+    
+    <button type="submit" class="btn-claim">Confirm Claim</button>
+</form>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; width: 100%;">
+            <p>No donations found within 5km. Be the first to donate!</p>
+        </div>
+        {% endfor %}
+    </div>
+<script>
+    function getLocation() {
+        const options = {
+            enableHighAccuracy: true, // Forces the browser to use the best possible signal
+            timeout: 10000,           // Wait up to 10 seconds for a lock
+            maximumAge: 0             // Don't use a saved/old location
+        };
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success, error, options);
+        }
+    }
+
+    function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        
+        // Update the hidden inputs for the Donate page
+        if(document.getElementsByName("lat").length > 0) {
+            document.getElementsByName("lat")[0].value = lat;
+            document.getElementsByName("lon")[0].value = lon;
+        }
+        
+        // If on the Claim page, reload with these precise coords
+        if(window.location.pathname.includes('claim') && !window.location.search.includes('lat')) {
+            window.location.href = window.location.pathname + "?lat=" + lat + "&lon=" + lon;
+        }
+        console.log("Precise Location Captured:", lat, lon);
+    }
+
+    function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        // Fallback: If GPS fails, at least let them see the page
+    }
+
+    window.onload = getLocation;
+</script>
+
+</body>
+</html>
